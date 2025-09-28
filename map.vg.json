@@ -1,0 +1,59 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 800,
+  "height": 450,
+  "title": "Monthly Arrivals by State of Entry to Malaysia (2020 - 2024)",
+  "projection": {
+    "type": "mercator",
+    "center": [110, 3.5],
+    "scale": 2200
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/2_symbol_map/js/WorldMapWithGraticules.topojson",
+        "format": { "type": "topojson", "feature": "ne_110m_graticules_30" }
+      },
+      "mark": { "type": "geoshape", "fill": null, "stroke": "lightgray" }
+    },
+    {
+      "data": {
+        "url": "my.json",
+        "format": { "type": "json", "property": "features" }
+      },
+      "transform": [
+        {
+          "lookup": "properties.name",
+          "from": {
+            "data": {
+              "url": "arrivals_by_state.csv",
+              "format": { "type": "csv" }
+            },
+            "key": "soe",
+            "fields": ["total_arrivals"]
+          },
+          "default": 0
+        },
+        { "calculate": "datum.total_arrivals + 0.1", "as": "total arrivals" }
+      ],
+      "mark": { "type": "geoshape", "stroke": "white", "strokeWidth": 0.5 },
+      "encoding": {
+        "color": {
+          "field": "total arrivals",
+          "type": "quantitative",
+          "title": "Total Arrivals",
+          "scale": { "type": "log" }
+        },
+        "tooltip": [
+          { "field": "properties.name", "type": "nominal", "title": "State" },
+          {
+            "field": "total_arrivals",
+            "type": "quantitative",
+            "title": "Total Arrivals",
+            "format": ","
+          }
+        ]
+      }
+    }
+  ]
+}
